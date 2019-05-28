@@ -1,89 +1,74 @@
-<?xml version="1.0" encoding="utf-8" ?>
-
-<project name="FreeRouting" default="all" basedir=".">
-  
-  <property name="javac.debug" value="on"/>
-  <property name="classes.dir" value="classes"/>
-  <property name="javac.deprecation" value="on"/>
-
-  <property name="src.dir" value="src"/>
-  <property name="deploy.dir" value="deploy"/>
-  <property name="lib.dir" value="jarlibs"/>
-  <property name="app.jar" value="${deploy.dir}/FreeRouting.jar"/>
-  
-   <path id="jclasspath">
-	   <fileset dir="${lib.dir}">
-	      <include name="*.jar"/>
-	   </fileset>
-   </path>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="FreeRoutingNew">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <property name="dist" location="rel"/>
 	
-  <tstamp>
-	  <format property="TODAY_ISO"
-	          pattern="yyyyMMdd_hhmm"
-	          locale="en,UK"/>
-  </tstamp>
-	
-  <target name="init">
-    <tstamp/>
-    <mkdir dir="${classes.dir}" />
-<!--    <mkdir dir="${deploy.dir}" />  -->
-  </target>
-
-  <target name="all" description="Build the project" depends="compile,copy,deploy"/>
-
-  <target name="clean" description="Clean the project">
-    <delete includeemptydirs="true" quiet="true">
-      <fileset dir="${classes.dir}" includes="**/*"/>
-    </delete>
-  </target>
-
-  <target name="compile" description="Compile Java source files" depends="init">
-    <javac destdir="${classes.dir}" debug="${javac.debug}" 
-           deprecation="${javac.deprecation}"
-    	   includeantruntime="false"
-           source="1.6" target="1.6">
-      <src path="src"/>
-      <classpath refid="jclasspath"/>
-    </javac>
-  </target>
-
-  <target name="copy" description="Copy files to output directory"  depends="init">
-    <copy todir="${classes.dir}">
-      <fileset dir="src">
-        <include name="**/*.gif"/>
-        <include name="**/*.jpg"/>
-        <include name="**/*.jpeg"/>
-        <include name="**/*.png"/>
-        <include name="**/*.properties"/>
-        <include name="**/*.resources"/>
-      </fileset>
-    </copy>
-  </target>
-
-
-  <target name="deploy">
-	<!-- do not delete app.jar, git will try to add a new one -->
-  	
-    <jar compress="yes" destfile="${app.jar}" >
-      <manifest>
-          <attribute name="Main-Class" value="freert.main.MainApplication"/>
-          <attribute name="Copyright" value="Damiano Bolla"/>     
-          <attribute name="SplashScreen-Image" value="logo.gif" /> 
-      	  <attribute name="Specification-Version" value="2017"/>
-          <attribute name="Implementation-Version" value="${TODAY_ISO}"/>
-      </manifest>
-      <fileset dir="${classes.dir}">
-          <include name="**/*.class"/>
-          <include name="**/*.gif"/>
-          <include name="**/*.png"/>
-          <include name="**/*.resources"/>
-          <include name="**/*.properties"/>
-      </fileset>
-	  <fileset dir="${src.dir}">
-        <include name="**/helpset/**"/>
-      </fileset>
-   	  <zipgroupfileset dir="${lib.dir}" includes="**/*.jar" /> 
-    </jar>
-  </target>
-  
+    <path id="FreeRoutingNew.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="jarlibs/bsh-20b4.jar"/>
+        <pathelement location="jarlibs/jhall-2.0_05.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+        <delete dir="${dist}/lib"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project,dist" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}" encoding="UTF-8">
+            <src path="src"/>
+            <classpath refid="FreeRoutingNew.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="MainApplication">
+        <java classname="freert.main.MainApplication" failonerror="true" fork="yes">
+            <classpath refid="FreeRoutingNew.classpath"/>
+        </java>
+    </target>
+    <target name="dist" depends="build-subprojects,build-project" description="generate the distribution" >
+        <mkdir dir="${dist}/lib"/>
+        <jar jarfile="${dist}/lib/${ant.project.name}.jar" basedir="bin">
+            <manifest>
+                <attribute name="Main-Class" value="freert.main.MainApplication" />
+            </manifest>
+        </jar>
+	</target>
+    <target name="Free Router [Win-Java 8]">
+        <java classname="freert.main.MainApplication" failonerror="true" fork="yes">
+            <classpath refid="FreeRoutingNew.classpath"/>
+        </java>
+    </target>
 </project>
